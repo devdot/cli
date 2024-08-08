@@ -4,32 +4,35 @@ namespace Devdot\Cli;
 
 use Devdot\Cli\Container\ContainerBuilder;
 use Devdot\Cli\Contracts\ContainerInterface;
+use Devdot\Cli\Contracts\KernelInterface;
 
-class Kernel
+class Kernel implements KernelInterface
 {
     private static self $instance;
 
     private ContainerInterface $container;
 
     public function __construct(
-        private string $dir,
-        private string $namespace,
+        private string $dir = __DIR__,
+        private string $namespace = __NAMESPACE__,
     ) {
     }
 
-    public static function getInstance(): static
+    public static function getInstance(): self
     {
-        return static::$instance ??= new static();
+        return self::$instance ??= new static();
     }
 
     public static function run(): void
     {
-        static::getInstance()->getContainer()->get(Application::class)->run();
+        /** @var Application */
+        $application = static::getInstance()->getContainer()->get(Application::class);
+        $application->run();
     }
 
     public function getName(): string
     {
-        return basename(realpath($this->dir . '/../'));
+        return basename(realpath($this->dir . '/../') ?: '');
     }
 
     public function getVersion(): string

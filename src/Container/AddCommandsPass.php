@@ -12,7 +12,9 @@ class AddCommandsPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
-        $commands = $this->getCommandClassNames($container->getParameter('namespace'), 'Commands');
+        $namespace = $container->getParameter('namespace');
+        assert(is_string($namespace));
+        $commands = $this->getCommandClassNames($namespace, 'Commands');
 
         foreach ($commands as $command) {
             $container->autowire($command, $command)->setTags(['command' => []]);
@@ -34,7 +36,7 @@ class AddCommandsPass implements CompilerPassInterface
             }
         }
 
-        $paths = array_map(fn(string $path): string => $path . '/' . $subPath, $paths);
+        $paths = array_map(fn(string $path): string => $path . '/' . $subPath, $paths ?? []);
         $paths = array_map('realpath', $paths);
         $paths = array_filter($paths, fn(bool|string $path): bool => is_string($path) && is_dir($path));
 
@@ -46,11 +48,14 @@ class AddCommandsPass implements CompilerPassInterface
         return $commands;
     }
 
+    /**
+     * @return string[]
+     */
     private function getClassNamesFromDirectory(string $path, string $relativePath = '', bool $recursive = true): array
     {
         $classes = [];
 
-        foreach (scandir($path) as $file) {
+        foreach (scandir($path) ?: [] as $file) {
             if ($file === '.' || $file === '..') {
                 continue;
             }
