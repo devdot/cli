@@ -8,7 +8,11 @@ use Devdot\Cli\Contracts\KernelInterface;
 
 abstract class Kernel implements KernelInterface
 {
+    const CACHED_CONTAINER_NAME = 'ProductionContainer';
+
     private static self $instance;
+
+    private bool $development = false;
 
     private ContainerInterface $container;
 
@@ -23,11 +27,27 @@ abstract class Kernel implements KernelInterface
         return self::$instance ??= new static();
     }
 
-    public static function run(): void
+    public static function run(bool $development = false): void
     {
+        $kernel = static::getInstance();
+        $kernel->development = $development;
         /** @var Application */
-        $application = static::getInstance()->getContainer()->get(Application::class);
+        $application = $kernel->getContainer()->get(Application::class);
         $application->run();
+    }
+
+
+    public static function cacheContainer(bool $development = false): void
+    {
+        $kernel = static::getInstance();
+        $kernel->development = $development;
+
+        $kernel->buildFreshContainer()->writeToCache();
+    }
+
+    public function isDevelopment(): bool
+    {
+        return $this->development;
     }
 
     public function getName(): string
@@ -62,16 +82,21 @@ abstract class Kernel implements KernelInterface
 
     private function buildContainer(): void
     {
-        // TODO: make this re-build in dev somehow
-        $class = ContainerBuilder::getCachedContainerClass($this);
-        if (class_exists($class)) {
+        if (!$this->development) {
+            // we are not in dev, simply load the cached container
+            $class = $this->namespace . '\\' . self::CACHED_CONTAINER_NAME;
             $this->container = new $class();
         } else {
-            // TODO: figure out a way to move container-building-related dependencies to require-dev
-            $container = ContainerBuilder::boot($this);
-            $container->writeToCache();
-            $this->container = $container;
+            $this->buildFreshContainer();
         }
+    }
+
+    private function buildFreshContainer(): ContainerBuilder
+    {
+        // TODO: figure out a way to move container-building-related dependencies to require-dev
+        $container = ContainerBuilder::boot($this);
+        $this->container = $container;
+        return $container;
     }
 
     public function configureContainer(ContainerBuilder $container): void

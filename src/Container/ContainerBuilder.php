@@ -10,12 +10,11 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 
 class ContainerBuilder extends SymfonyContainerBuilder implements ContainerInterface
 {
-    const CACHED_CONTAINER_NAME = 'CachedContainer_';
-
     public static function boot(Kernel $kernel): self
     {
         $container = new self();
 
+        $container->setParameter('development', $kernel->isDevelopment());
         $container->setParameter('namespace', $kernel->getNamespace());
         $container->setParameter('application_name', $kernel->getName());
         $container->setParameter('application_version', $kernel->getVersion());
@@ -41,17 +40,10 @@ class ContainerBuilder extends SymfonyContainerBuilder implements ContainerInter
         /** @var Kernel */
         $kernel = $this->get(Kernel::class);
 
-        file_put_contents($kernel->getDir() . '/' . self::CACHED_CONTAINER_NAME . '.php', $dumper->dump([
-            'class' => self::CACHED_CONTAINER_NAME,
+        file_put_contents($kernel->getDir() . '/' . $kernel::CACHED_CONTAINER_NAME . '.php', $dumper->dump([
+            'class' => $kernel::CACHED_CONTAINER_NAME,
             'base_class' => '\\' . CachedContainer::class,
             'namespace' => $kernel->getNamespace(),
         ]));
-    }
-
-    public static function getCachedContainerClass(Kernel $kernel): string
-    {
-        $class = $kernel->getNamespace() . '\\' . self::CACHED_CONTAINER_NAME;
-
-        return $class;
     }
 }
