@@ -17,18 +17,13 @@ abstract class Command extends SymfonyCommand
     protected OutputInterface $output;
     protected SymfonyStyle $style;
 
-    /**
-     * @var array<Closure(): void>
-     */
-    private array $configures = [];
-
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
 
         parent::__construct();
 
-        $this->constructTraits();
+        $this->setName($this::getGeneratedName());
     }
 
     public static function getGeneratedName(): string
@@ -48,32 +43,6 @@ abstract class Command extends SymfonyCommand
         }
 
         return strtolower($name);
-    }
-
-    private function constructTraits(): void
-    {
-        // TODO: find a way to cache these
-        foreach (class_uses($this) as $trait) {
-            $basename = basename(str_replace('\\', '/', $trait));
-            $method = 'construct' . $basename;
-            if (method_exists($this, $method)) {
-                $this->$method(); // TODO: do this with DI
-            }
-        }
-    }
-
-    protected function configure(): void
-    {
-        $this->setName($this::getGeneratedName());
-
-        foreach ($this->configures as $configure) {
-            $configure->call($this);
-        }
-    }
-
-    public function bindConfigure(Closure $closure): void
-    {
-        $this->configures[] = $closure;
     }
 
     final protected function execute(InputInterface $input, OutputInterface $output): int

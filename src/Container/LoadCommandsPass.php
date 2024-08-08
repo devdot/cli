@@ -12,7 +12,12 @@ class LoadCommandsPass implements CompilerPassInterface
         $commandsAsMap = [];
 
         foreach ($container->findTaggedServiceIds('command') as $id => $tags) {
-            $container->getDefinition($id)->setPublic(true)->setAutowired(true);
+            $definition = $container->getDefinition($id);
+
+            $definition->setPublic(true);
+            $definition->setAutowired(true);
+
+            // add to command map for ContainerCommandLoader
             $commandsAsMap[$id::getGeneratedName()] = $id;
         }
 

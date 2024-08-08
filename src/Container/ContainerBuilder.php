@@ -24,6 +24,7 @@ class ContainerBuilder extends SymfonyContainerBuilder implements ContainerInter
         $container->addCompilerPass(new BasePass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 100);
         $container->addCompilerPass(new AddCommandsPass());
         $container->addCompilerPass(new LoadCommandsPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1);
+        $container->addCompilerPass(new AddCommandTraitConstructorsPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1);
 
         $container->register(Kernel::class, Kernel::class)->setSynthetic(true)->setPublic(true);
 
