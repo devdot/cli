@@ -1,0 +1,30 @@
+{
+    "name": "devdot/cli",
+    "description": "Tools for CLI projects, on top of symfony/console.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Devdot\\Cli\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Thomas Kuschan",
+            "email": "mail@thomaskuschan.de"
+        }
+    ],
+    "require": {
+        "symfony/console": "^7"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.11",
+        "squizlabs/php_codesniffer": "^3.10",
+        "phpunit/phpunit": "^11.3"
+    },
+    "scripts": {
+        "check-static": "phpstan analyse src --level=9",
+        "format": "phpcbf --standard=PSR12 src tests",
+        "test": "phpunit tests"
+    }
+}
