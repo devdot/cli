@@ -6,7 +6,7 @@ use Devdot\Cli\Container\ContainerBuilder;
 use Devdot\Cli\Contracts\ContainerInterface;
 use Devdot\Cli\Contracts\KernelInterface;
 
-class Kernel implements KernelInterface
+abstract class Kernel implements KernelInterface
 {
     private static self $instance;
 
@@ -47,6 +47,11 @@ class Kernel implements KernelInterface
         return $this->namespace;
     }
 
+    public function getDir(): string
+    {
+        return $this->dir;
+    }
+
     public function getContainer(): ContainerInterface
     {
         if (!isset($this->container)) {
@@ -57,7 +62,16 @@ class Kernel implements KernelInterface
 
     private function buildContainer(): void
     {
-        $this->container = ContainerBuilder::boot($this);
+        // TODO: make this re-build in dev somehow
+        $class = ContainerBuilder::getCachedContainerClass($this);
+        if (class_exists($class)) {
+            $this->container = new $class();
+        } else {
+            // TODO: figure out a way to move container-building-related dependencies to require-dev
+            $container = ContainerBuilder::boot($this);
+            $container->writeToCache();
+            $this->container = $container;
+        }
     }
 
     public function configureContainer(ContainerBuilder $container): void
