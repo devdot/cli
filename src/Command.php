@@ -2,7 +2,6 @@
 
 namespace Devdot\Cli;
 
-use Closure;
 use Devdot\Cli\Contracts\ContainerInterface;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
