@@ -19,7 +19,11 @@ class ContainerBuilder extends SymfonyContainerBuilder implements ContainerInter
         $container->setParameter('application_name', $kernel->getName());
         $container->setParameter('application_version', $kernel->getVersion());
 
-        $kernel->configureContainer($container);
+        $container->addCompilerPass($kernel);
+
+        foreach ($kernel->getProviders() as $provider) {
+            $container->addCompilerPass(new $provider());
+        }
 
         $container->addCompilerPass(new BasePass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 100);
         $container->addCompilerPass(new AddCommandsPass());

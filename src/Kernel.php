@@ -3,11 +3,16 @@
 namespace Devdot\Cli;
 
 use Devdot\Cli\Container\ContainerBuilder;
+use Devdot\Cli\Container\ServiceProviderTrait;
 use Devdot\Cli\Contracts\ContainerInterface;
 use Devdot\Cli\Contracts\KernelInterface;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder as SymfonyContainerBuilder;
 
-abstract class Kernel implements KernelInterface
+abstract class Kernel implements KernelInterface, CompilerPassInterface
 {
+    use ServiceProviderTrait;
+
     const CACHED_CONTAINER_NAME = 'ProductionContainer';
 
     private static self $instance;
@@ -15,6 +20,12 @@ abstract class Kernel implements KernelInterface
     private bool $development = false;
 
     private ContainerInterface $container;
+
+    /**
+     * Define your own custom service providers that will
+     * @var class-string<Container\ServiceProvider>[]
+     */
+    protected array $providers = [];
 
     public function __construct(
         private string $dir = __DIR__,
@@ -84,6 +95,7 @@ abstract class Kernel implements KernelInterface
     {
         if (!$this->development) {
             // we are not in dev, simply load the cached container
+            /** @var class-string<\Devdot\Cli\Container\CachedContainer> */
             $class = $this->namespace . '\\' . self::CACHED_CONTAINER_NAME;
             $this->container = new $class();
             $this->container->set('kernel', $this);
@@ -100,7 +112,11 @@ abstract class Kernel implements KernelInterface
         return $container;
     }
 
-    public function configureContainer(ContainerBuilder $container): void
+    /**
+     * @return class-string<Container\ServiceProvider>[]
+     */
+    public function getProviders(): array
     {
+        return $this->providers;
     }
 }
