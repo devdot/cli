@@ -14,8 +14,8 @@ class BasePass implements CompilerPassInterface
     public function process(ContainerBuilder $container): void
     {
         // register self
-        $container->setAlias(ContainerInterface::class, 'service_container');
-        $container->setAlias(\Psr\Container\ContainerInterface::class, 'service_container');
+        $container->setAlias(ContainerInterface::class, 'service_container')->setPublic(true);
+        $container->setAlias(\Psr\Container\ContainerInterface::class, 'service_container')->setPublic(true);
 
         // register application
         $container->autowire('application', Application::class)->setPublic(true)->setArguments([

@@ -26,11 +26,13 @@ class ContainerBuilder extends SymfonyContainerBuilder implements ContainerInter
         $container->addCompilerPass(new LoadCommandsPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1);
         $container->addCompilerPass(new AddCommandTraitConstructorsPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1);
 
-        $container->register(Kernel::class, Kernel::class)->setSynthetic(true)->setPublic(true);
+        $container->register('kernel', $kernel::class)->setSynthetic(true)->setPublic(true);
+        $container->setAlias(Kernel::class, 'kernel')->setPublic(true);
+        $container->setAlias($kernel::class, 'kernel')->setPublic(true);
 
         $container->compile();
 
-        $container->set(Kernel::class, $kernel);
+        $container->set('kernel', $kernel);
 
         return $container;
     }
@@ -39,7 +41,7 @@ class ContainerBuilder extends SymfonyContainerBuilder implements ContainerInter
     {
         $dumper = new PhpDumper($this);
         /** @var Kernel */
-        $kernel = $this->get(Kernel::class);
+        $kernel = $this->get('kernel');
 
         file_put_contents($kernel->getDir() . '/' . $kernel::CACHED_CONTAINER_NAME . '.php', $dumper->dump([
             'class' => $kernel::CACHED_CONTAINER_NAME,

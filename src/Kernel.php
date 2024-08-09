@@ -86,6 +86,7 @@ abstract class Kernel implements KernelInterface
             // we are not in dev, simply load the cached container
             $class = $this->namespace . '\\' . self::CACHED_CONTAINER_NAME;
             $this->container = new $class();
+            $this->container->set('kernel', $this);
         } else {
             $this->buildFreshContainer();
         }
