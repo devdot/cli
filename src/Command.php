@@ -27,7 +27,7 @@ abstract class Command extends SymfonyCommand
 
     public static function getGeneratedName(): string
     {
-        $camelCaseToDash = fn(string $camel): string => $segment = preg_replace('/([a-z])([A-Z])/', '$1-$2', $camel);
+        $camelCaseToDash = fn(string $camel): string => (preg_replace('/([a-z])([A-Z])/', '$1-$2', $camel) ?? '');
 
         $namespace = static::class;
         $segments = explode('\\', $namespace);
