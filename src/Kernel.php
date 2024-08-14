@@ -63,14 +63,20 @@ abstract class Kernel implements KernelInterface, CompilerPassInterface
 
     public function getName(): string
     {
-        return basename(realpath($this->dir . '/../') ?: '');
+        $root = realpath($this->dir . '/../') ?: '';
+        $basename = basename($root);
+        if ($basename !== 'tmp') {
+            return $basename;
+        } else {
+            return basename(dirname($root));
+        }
     }
 
     public function getVersion(): string
     {
         $out = [];
         exec('cd ' . realpath($this->dir . '/../') . ' && git describe --tags --abbrev=0 2>/dev/null', $out);
-        return $out[0] ?? '0.0.1';
+        return $out[0] ?? '';
     }
 
     public function getNamespace(): string
