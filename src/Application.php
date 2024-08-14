@@ -7,8 +7,12 @@ use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
 
 final class Application extends BaseApplication
 {
-    public function __construct(string $name, string $version, CommandLoaderInterface $commandLoader)
-    {
+    public function __construct(
+        string $name,
+        string $version,
+        CommandLoaderInterface $commandLoader,
+        public readonly bool $development,
+    ) {
         parent::__construct($name, $version);
         $this->setAutoExit(true);
         $this->setCommandLoader($commandLoader);

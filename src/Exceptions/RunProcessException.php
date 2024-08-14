@@ -14,6 +14,6 @@ class RunProcessException extends Exception
 
     public static function fromProcess(Process $process): self
     {
-        return new self($process->getErrorOutput(), $process->getExitCode());
+        return new self($process->getErrorOutput(), $process->getExitCode() ?? 0);
     }
 }

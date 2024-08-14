@@ -44,6 +44,13 @@ abstract class Command extends SymfonyCommand
         return strtolower($name);
     }
 
+    public function isDevelopment(): bool
+    {
+        /** @var Application */
+        $application = $this->container->get('application');
+        return $application->development;
+    }
+
     final protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->input = $input;
@@ -54,6 +61,11 @@ abstract class Command extends SymfonyCommand
             return $this->handle();
         } catch (Throwable $t) {
             $this->style->error($t->getMessage());
+
+            if ($this->isDevelopment()) {
+                $this->output->write($t->getTraceAsString());
+            }
+
             return $t->getCode();
         }
     }

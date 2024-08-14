@@ -21,6 +21,7 @@ class BasePass implements CompilerPassInterface
         $container->autowire('application', Application::class)->setPublic(true)->setArguments([
             '$name' => '%application_name%',
             '$version' => '%application_version%',
+            '$development' => '%development%',
         ]);
         $container->setAlias(Application::class, 'application')->setPublic(true);
 
