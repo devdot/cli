@@ -33,11 +33,22 @@ class AddCommandTraitConstructorsPass implements CompilerPassInterface
             }
         }
 
-        // now search lower too
+        $this->addTraitsFor($class, $definition);
+    }
+
+    /**
+     * @param class-string $class
+     */
+    private function addTraitsFor(string $class, Definition $definition): void
+    {
         foreach (class_uses($class) as $trait) {
+            // load the traits too
+            $this->addTraitsFor($trait, $definition);
+
+            // finally add the traits
             $basename = basename(str_replace('\\', '/', $trait));
             $method = '__construct' . $basename;
-            if (method_exists($trait, $method)) {
+            if (method_exists($trait, $method) && !$definition->hasMethodCall($method)) {
                 $definition->addMethodCall($method);
             }
         }
