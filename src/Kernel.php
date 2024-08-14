@@ -76,7 +76,8 @@ abstract class Kernel implements KernelInterface, CompilerPassInterface
     {
         $out = [];
         exec('cd ' . realpath($this->dir . '/../') . ' && git describe --tags --abbrev=0 2>/dev/null', $out);
-        return $out[0] ?? '';
+        $version = $out[0] ?? '';
+        return str_starts_with($version, 'v') ? substr($version, 1) : $version;
     }
 
     public function getNamespace(): string
