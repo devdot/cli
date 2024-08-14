@@ -13,7 +13,7 @@ class AddCommandTraitConstructorsPass implements CompilerPassInterface
     {
         foreach ($container->findTaggedServiceIds('command') as $id => $tags) {
             // search the traits for constructors
-            if(is_subclass_of($id, Command::class)) {
+            if (is_subclass_of($id, Command::class)) {
                 $this->scanTraitsFor($id, $container->getDefinition($id));
             }
         }

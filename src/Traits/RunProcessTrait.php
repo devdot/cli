@@ -44,7 +44,8 @@ trait RunProcessTrait
             $dir = realpath($cwd ?? $getcwd);
 
             if (str_starts_with($dir, $getcwd)) {
-                $dir = './' . substr($dir, strlen($getcwd));
+                $sub = substr($dir, strlen($getcwd));
+                $dir = (str_starts_with($sub, '/') ? '.' : './') . $sub;
             }
 
             $this->output->writeln(sprintf('%s> %s', $dir, implode(' ', $command)));
