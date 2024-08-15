@@ -44,7 +44,8 @@ abstract class Kernel implements KernelInterface, CompilerPassInterface
         $kernel->development = $development;
         /** @var Application */
         $application = $kernel->getContainer()->get(Application::class);
-        $application->run();
+        $code = $application->run();
+        exit($code);
     }
 
 

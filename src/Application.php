@@ -14,7 +14,7 @@ final class Application extends BaseApplication
         public readonly bool $development,
     ) {
         parent::__construct($name, $version);
-        $this->setAutoExit(true);
+        $this->setAutoExit(false);
         $this->setCommandLoader($commandLoader);
     }
 }
