@@ -16,6 +16,7 @@ trait RunProcessTrait
 
     private ?string $runProcessDefaultCwd = null;
     private bool $runProcessThrowErrors = false;
+    private bool $runProcessShowInternalCommand = false;
 
     /**
      * @param string|array $command Either a string of the command or an array that is compatible with Symfony Process. You may also call another command by adding it's class name as the first array entry.
@@ -26,6 +27,11 @@ trait RunProcessTrait
             // we simply run the other command from here now
             $class = array_shift($command);
             $input = new StringInput($class::getGeneratedName() . ' ' . implode(' ', $command));
+
+            if ($this->runProcessShowInternalCommand) {
+                $this->output->writeln('./> ' . (string) $input);
+            }
+
             return $this->getApplication()->run($input, $this->output);
         }
 
@@ -82,5 +88,10 @@ trait RunProcessTrait
     protected function setRunProcessThrowErrors(bool $throw): void
     {
         $this->runProcessThrowErrors = $throw;
+    }
+
+    protected function setRunProcessShowInternalCommand(bool $show): void
+    {
+        $this->runProcessShowInternalCommand = $show;
     }
 }
