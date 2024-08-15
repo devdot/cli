@@ -17,7 +17,10 @@ class AddCommandsPass implements CompilerPassInterface
         $commands = $this->getCommandClassNames($namespace, 'Commands');
 
         foreach ($commands as $command) {
-            $container->autowire($command, $command)->setTags(['command' => []]);
+            $container->autowire($command, $command)
+                ->setTags(['command' => []])
+                ->addMethodCall('setContainer')
+            ;
         }
     }
 

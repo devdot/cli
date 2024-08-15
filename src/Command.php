@@ -16,15 +16,18 @@ abstract class Command extends SymfonyCommand
     protected OutputInterface $output;
     protected SymfonyStyle $style;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct()
     {
-        $this->container = $container;
-
         parent::__construct();
 
         $this->setName($this::getGeneratedName());
     }
 
+    /**
+     * Get the generated name of this command. Will be cached by the container, therefore returns should not be dynamic.
+     * Overwrite this method if you want to change the commands name.
+     * @return string Name the command will be called by.
+     */
     public static function getGeneratedName(): string
     {
         $camelCaseToDash = fn(string $camel): string => (preg_replace('/([a-z])([A-Z])/', '$1-$2', $camel) ?? '');
@@ -44,6 +47,11 @@ abstract class Command extends SymfonyCommand
         }
 
         return strtolower($name);
+    }
+
+    public function setContainer(ContainerInterface $container): void
+    {
+        $this->container = $container;
     }
 
     public function isDevelopment(): bool
@@ -72,5 +80,9 @@ abstract class Command extends SymfonyCommand
         }
     }
 
+    /**
+     * Handle execution of the command.
+     * @return int Exit code. Recommended use: self::SUCCESS, self::FAILURE or self::INVALID
+     */
     abstract protected function handle(): int;
 }
