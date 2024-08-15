@@ -7,7 +7,6 @@ use Devdot\Cli\Container\ServiceProviderTrait;
 use Devdot\Cli\Contracts\ContainerInterface;
 use Devdot\Cli\Contracts\KernelInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder as SymfonyContainerBuilder;
 
 abstract class Kernel implements KernelInterface, CompilerPassInterface
 {
@@ -27,6 +26,9 @@ abstract class Kernel implements KernelInterface, CompilerPassInterface
      */
     protected array $providers = [];
 
+    /**
+     * Create a new application Kernel. Make sure to always provide the projects directory and namespace to the parent method!
+     */
     public function __construct(
         private string $dir = __DIR__,
         private string $namespace = __NAMESPACE__,
@@ -38,6 +40,10 @@ abstract class Kernel implements KernelInterface, CompilerPassInterface
         return self::$instance ??= new static();
     }
 
+    /**
+     * Run the application. Call this method in the application binary.
+     * @param bool $development If false, a cached container is assumed.
+     */
     public static function run(bool $development = false): void
     {
         $kernel = static::getInstance();
@@ -49,6 +55,9 @@ abstract class Kernel implements KernelInterface, CompilerPassInterface
     }
 
 
+    /**
+     * Cache the container for use in production. Call this method from the build binary.
+     */
     public static function cacheContainer(bool $development = false): void
     {
         $kernel = static::getInstance();
@@ -62,6 +71,10 @@ abstract class Kernel implements KernelInterface, CompilerPassInterface
         return $this->development;
     }
 
+    /**
+     * Get the application name.
+     * @return string Name of the application. If not overwritten, this will default to the project directory name.
+     */
     public function getName(): string
     {
         $root = realpath($this->dir . '/../') ?: '';
@@ -73,6 +86,10 @@ abstract class Kernel implements KernelInterface, CompilerPassInterface
         }
     }
 
+    /**
+     * Get the application version.
+     * @return string Version of the application. If not overwritten, this will default to the last tag on git.
+     */
     public function getVersion(): string
     {
         $out = [];

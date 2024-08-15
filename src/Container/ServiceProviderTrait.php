@@ -12,17 +12,24 @@ trait ServiceProviderTrait
      */
     protected array $services = [];
 
-    public function process(SymfonyContainerBuilder $container): void
+    final public function process(SymfonyContainerBuilder $container): void
     {
         $this->booting($container);
     }
 
+    /**
+     * Called during the container build phase. Use this to register any complex services or
+     * If you overwrite this method, make sure to call parent::booting.
+     */
     protected function booting(SymfonyContainerBuilder $container): void
     {
         $this->addServicesToContainer($container);
     }
 
-    protected function addServicesToContainer(SymfonyContainerBuilder $container, bool $public = false): void
+    /**
+     * Registers self::$services into the container. Unless overwritten, this method is always called by ServiceProvider::booting
+     */
+    final protected function addServicesToContainer(SymfonyContainerBuilder $container, bool $public = false): void
     {
         foreach ($this->services as $key => $class) {
             if (is_string($key)) {
