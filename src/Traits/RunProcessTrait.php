@@ -22,13 +22,7 @@ trait RunProcessTrait
      */
     protected function runProcess(string|array $command, bool $quiet = false, ?string $cwd = null, ?array $env = null, ?int $timeout = 60): int
     {
-        if (is_string($command)) {
-            // break up the command
-            $input = new StringInput($command);
-            $command = $input->getRawTokens();
-        }
-
-        if (is_subclass_of($command[0], Command::class)) {
+        if (is_array($command) && is_subclass_of($command[0], Command::class)) {
             // we simply run the other command from here now
             $class = array_shift($command);
             $input = new StringInput($class::getGeneratedName() . ' ' . implode(' ', $command));
@@ -37,7 +31,12 @@ trait RunProcessTrait
 
         $cwd ??= $this->runProcessDefaultCwd;
 
-        $this->lastProcess = new Process($command, $cwd, $env, null, $timeout);
+        if (is_string($command)) {
+            $this->lastProcess = Process::fromShellCommandline($command, $cwd, $env, null, $timeout);
+        } else {
+            $this->lastProcess = new Process($command, $cwd, $env, null, $timeout);
+        }
+
 
         if (!$quiet) {
             $getcwd = getcwd();
@@ -48,7 +47,7 @@ trait RunProcessTrait
                 $dir = (str_starts_with($sub, '/') ? '.' : './') . $sub;
             }
 
-            $this->output->writeln(sprintf('%s> %s', $dir, implode(' ', $command)));
+            $this->output->writeln(sprintf('%s> %s', $dir, is_string($command) ? $command : implode(' ', $command)));
         }
 
         $interactive = !$quiet && $this->input->isInteractive();
