@@ -89,7 +89,7 @@ The provided binaries are described as follows:
 | ------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `bin/dev`   | `run:dev`           | Execute your application in development mode. The container will be rebuild on every call, by default no caching is active. |
 | `bin/prod`  | `run:prod`          | Execute your application in production mode. This will assume a built container and use all available caching.              |
-| `bin/build` | `run:build`         | Build and cache the production container. This is required for autowiring to work in production.                            |
+| `bin/build` | `run:build <version> <name>` | Build and cache the production container. This is required for autowiring to work in production.                            |
 
 For more details on the build process, see [Production Build](#production-build).
 

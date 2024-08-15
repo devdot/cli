@@ -17,6 +17,8 @@ abstract class Kernel implements KernelInterface, CompilerPassInterface
     private static self $instance;
 
     private bool $development = false;
+    private string $version;
+    private string $name;
 
     private ContainerInterface $container;
 
@@ -58,10 +60,18 @@ abstract class Kernel implements KernelInterface, CompilerPassInterface
     /**
      * Cache the container for use in production. Call this method from the build binary.
      */
-    public static function cacheContainer(bool $development = false): void
+    public static function cacheContainer(bool $development = false, ?string $version = null, ?string $name = null): void
     {
         $kernel = static::getInstance();
         $kernel->development = $development;
+
+        if ($name) {
+            $kernel->setName($name);
+        }
+
+        if ($version) {
+            $kernel->setVersion($version);
+        }
 
         $kernel->buildFreshContainer()->writeToCache();
     }
@@ -77,13 +87,21 @@ abstract class Kernel implements KernelInterface, CompilerPassInterface
      */
     public function getName(): string
     {
-        $root = realpath($this->dir . '/../') ?: '';
-        $basename = basename($root);
-        if ($basename !== 'tmp') {
-            return $basename;
-        } else {
-            return basename(dirname($root));
+        if (!isset($this->name)) {
+            $root = realpath($this->dir . '/../') ?: '';
+            $basename = basename($root);
+            if ($basename !== 'tmp') {
+                return $this->name = $basename;
+            } else {
+                return $this->name = basename(dirname($root));
+            }
         }
+        return $this->name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
     }
 
     /**
@@ -92,10 +110,18 @@ abstract class Kernel implements KernelInterface, CompilerPassInterface
      */
     public function getVersion(): string
     {
-        $out = [];
-        exec('cd ' . realpath($this->dir . '/../') . ' && git describe --tags --abbrev=0 2>/dev/null', $out);
-        $version = $out[0] ?? '';
-        return str_starts_with($version, 'v') ? substr($version, 1) : $version;
+        if (!isset($this->version)) {
+            $out = [];
+            exec('cd ' . realpath($this->dir . '/../') . ' && git describe --tags --abbrev=0 2>/dev/null', $out);
+            $version = $out[0] ?? '';
+            $this->version = str_starts_with($version, 'v') ? substr($version, 1) : $version;
+        }
+        return $this->version;
+    }
+
+    public function setVersion(string $version): void
+    {
+        $this->version = $version;
     }
 
     public function getNamespace(): string
