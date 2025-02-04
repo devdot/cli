@@ -68,6 +68,7 @@ abstract class Command extends SymfonyCommand
         $this->style = new SymfonyStyle($input, $output);
 
         try {
+            $this->beforeHandle();
             return $this->handle();
         } catch (Throwable $t) {
             $this->style->error($t->getMessage());
@@ -78,6 +79,10 @@ abstract class Command extends SymfonyCommand
 
             return $t->getCode();
         }
+    }
+
+    protected function beforeHandle(): void
+    {
     }
 
     /**
