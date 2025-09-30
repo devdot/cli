@@ -69,20 +69,31 @@ abstract class Command extends SymfonyCommand
 
         try {
             $this->beforeHandle();
-            return $this->handle();
+            $code = $this->handle();
+            $this->afterHandle($code);
+            return $code;
         } catch (Throwable $t) {
-            $this->style->error($t->getMessage());
-
-            if ($this->isDevelopment()) {
-                $this->output->write($t->getTraceAsString());
-            }
-
-            return $t->getCode();
+            return $this->handleException($t);
         }
     }
 
     protected function beforeHandle(): void
     {
+    }
+
+    protected function afterHandle(int $code): void
+    {
+    }
+
+    protected function handleException(Throwable $t): int
+    {
+        $this->style->error($t->getMessage());
+
+        if ($this->isDevelopment()) {
+            $this->output->write($t->getTraceAsString());
+        }
+
+        return $t->getCode();
     }
 
     /**

@@ -170,6 +170,32 @@ You may change the application name and version by overwriting `Kernel::getName`
 
 Services for the container may be added as class-string in the `Kernel::$services` array. For more on services and providers, see [Service Providers](#service-providers).
 
+#### Command methods for overwriting
+
+There are some methods in the `Command` class that are ready for being overwritten by extending classes:
+
+```php
+class ExampleCommand extends Command
+{
+    protected function beforeHandle(): void
+    {
+    }
+
+    protected function afterHandle(int $code): void
+    {
+    }
+
+    protected function handleException(Throwable $t): int
+    {
+        if ($t instanceof MyException) {
+            //
+        }
+
+        return parent::handleException($t);
+    }
+}
+```
+
 #### Customization
 
 Follow these steps to change the default namespace or directory:
