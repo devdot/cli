@@ -205,6 +205,12 @@ Follow these steps to change the default namespace or directory:
 - change namespace in entrypoints (files in `bin`)
 - dump composer autoload
 
+You may use the `cli-builder` to automatically rename the namespace:
+
+```sh
+vendor/bin/cli-builder composer:rename-namespace New\\Namespace
+```
+
 ### Traits
 
 There are some traits that provide common functionality to commands as you require them. Thanks to [Trait Constructors](#command-trait-constructors), they require no setup in `Command::__construct` or `Command::configure`.
