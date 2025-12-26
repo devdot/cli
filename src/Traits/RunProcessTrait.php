@@ -4,6 +4,7 @@ namespace Devdot\Cli\Traits;
 
 use Devdot\Cli\Command;
 use Devdot\Cli\Exceptions\RunProcessException;
+use Exception;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Process\Process;
 
@@ -19,7 +20,8 @@ trait RunProcessTrait
     private bool $runProcessShowInternalCommand = false;
 
     /**
-     * @param string|array $command Either a string of the command or an array that is compatible with Symfony Process. You may also call another command by adding it's class name as the first array entry.
+     * @param string|string[] $command Either a string of the command or an array that is compatible with Symfony Process. You may also call another command by adding it's class name as the first array entry.
+     * @param null|string[] $env
      */
     protected function runProcess(string|array $command, bool $quiet = false, ?string $cwd = null, ?array $env = null, ?int $timeout = 60): int
     {
@@ -32,7 +34,7 @@ trait RunProcessTrait
                 $this->output->writeln('./> ' . (string) $input);
             }
 
-            return $this->getApplication()->run($input, $this->output);
+            return $this->getApplication()?->run($input, $this->output) ?? throw new Exception('Could not get Application!');
         }
 
         $cwd ??= $this->runProcessDefaultCwd;
@@ -45,8 +47,8 @@ trait RunProcessTrait
 
 
         if (!$quiet) {
-            $getcwd = getcwd();
-            $dir = realpath($cwd ?? $getcwd);
+            $getcwd = getcwd() ?: '.';
+            $dir = realpath($cwd ?? $getcwd) ?: throw new Exception('Could not locate working directory!');
 
             if (str_starts_with($dir, $getcwd)) {
                 $sub = substr($dir, strlen($getcwd));

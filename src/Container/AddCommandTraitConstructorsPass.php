@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\Definition;
 
 class AddCommandTraitConstructorsPass implements CompilerPassInterface
 {
+    #[\Override]
     public function process(ContainerBuilder $container): void
     {
         foreach ($container->findTaggedServiceIds('command') as $id => $tags) {
@@ -26,9 +27,8 @@ class AddCommandTraitConstructorsPass implements CompilerPassInterface
     {
         // search the parent first
         if ($class !== Command::class) {
-            /** @var bool|class-string<Command> */
             $parent = get_parent_class($class);
-            if (is_string($parent) && class_exists($parent)) {
+            if (is_string($parent) && class_exists($parent) && is_subclass_of($parent, Command::class)) {
                 $this->scanTraitsFor($parent, $definition);
             }
         }

@@ -8,6 +8,11 @@
             "Devdot\\Cli\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Thomas Kuschan",
@@ -15,20 +20,20 @@
         }
     ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.4",
         "psr/container": "^2.0",
-        "symfony/config": "^7.1",
-        "symfony/console": "^7",
-        "symfony/dependency-injection": "^7.1",
-        "symfony/process": "^7.1.7"
+        "symfony/config": "^8",
+        "symfony/console": "^8",
+        "symfony/dependency-injection": "^8",
+        "symfony/process": "^8"
     },
     "require-dev": {
-        "phpstan/phpstan": "^1.11",
-        "squizlabs/php_codesniffer": "^3.10",
-        "phpunit/phpunit": "^11.3"
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^12",
+        "squizlabs/php_codesniffer": "^4"
     },
     "scripts": {
-        "check-static": "phpstan analyse src --level=9",
+        "check-static": "phpstan analyse src tests/Traits --level=9",
         "format": "phpcbf --standard=PSR12 src tests",
         "test": "phpunit tests"
     },

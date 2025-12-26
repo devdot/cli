@@ -61,6 +61,7 @@ abstract class Command extends SymfonyCommand
         return $application->development;
     }
 
+    #[\Override]
     final protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->input = $input;
